@@ -1,4 +1,4 @@
-namespace Celeste.Mod.AxiomeQoLModule;
+namespace Celeste.Mod.AxiomeQoL;
 public static class DialogIds {
     // Menu
     public const string AxiomeQoLId = "AXIOME_QOL";
