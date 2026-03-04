@@ -79,6 +79,11 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             PlaceCheckpointInLevel(self);
         }
 
+        public static void RemoveCheckpointEntitiesFromLevel(Level level) {
+            foreach (var checkpoint in level.Tracker.GetEntities<CheckpointTrigger>())
+                checkpoint.RemoveSelf();
+        }
+
         public static void PlaceCheckpointInLevel(Level level)
         {
             string roomID = GetRoomID(level);

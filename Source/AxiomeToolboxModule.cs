@@ -39,9 +39,9 @@ public class AxiomeToolboxModule : EverestModule {
         CheckpointPlacementManager.Load();
         typeof(SaveLoadIntegration).ModInterop();
         SaveLoadInstance = SaveLoadIntegration.RegisterSaveLoadAction(
-            null, 
-            OnLoadState, 
-            null, 
+            OnSaveState,
+            OnLoadState,
+            null,
             OnBeforeSaveState,
             null,
             null
@@ -81,11 +81,21 @@ public class AxiomeToolboxModule : EverestModule {
         if (Settings.Enabled) CheckpointPlacementManager.ClearAll();
     }
 
-    private static void OnLoadState(Dictionary<Type, Dictionary<string, object>> dictionary, Level level) {
-        if (Settings.Enabled) CheckpointPlacementManager.ResetAllTriggeredStates();
+    private static void OnSaveState(Dictionary<Type, Dictionary<string, object>> _, Level level) {
+        if (!Settings.Enabled) return;
+        CheckpointPlacementManager.ResetAllTriggeredStates();
+        CheckpointPlacementManager.PlaceCheckpointInLevel(level);
+    }
+
+    private static void OnLoadState(Dictionary<Type, Dictionary<string, object>> _, Level level) {
+        if (!Settings.Enabled) return;
+        CheckpointPlacementManager.ResetAllTriggeredStates();
+        CheckpointPlacementManager.PlaceCheckpointInLevel(level);
     }
 
     private static void OnBeforeSaveState(Level level) {
-        if (Settings.Enabled) CheckpointPlacementManager.ResetAllTriggeredStates();
+        if (!Settings.Enabled) return;
+        CheckpointPlacementManager.ResetAllTriggeredStates();
+        CheckpointPlacementManager.RemoveCheckpointEntitiesFromLevel(level);
     }
 }
