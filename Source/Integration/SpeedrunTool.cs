@@ -1,5 +1,4 @@
-﻿using Monocle;
-using MonoMod.ModInterop;
+﻿using MonoMod.ModInterop;
 using System;
 using System.Collections.Generic;
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using Celeste.Mod.AxiomeToolbox.Menu;
+using Celeste.Mod.AxiomeToolbox.UI;
 using FMOD.Studio;
 using Celeste.Mod.AxiomeToolbox.Checkpoint;
 using MonoMod.ModInterop;
@@ -58,7 +58,7 @@ public class AxiomeToolboxModule : EverestModule {
     public override void CreateModMenuSection(TextMenu menu, bool inGame, EventInstance pauseSnapshot)
     {
         CreateModMenuSectionHeader(menu, inGame, pauseSnapshot);
-        ModMenuOptions.CreateMenu(menu);
+        ModMenuOptions.CreateMenu(menu, inGame);
         CreateModMenuSectionKeyBindings(menu, inGame, pauseSnapshot);
     }
 
@@ -76,7 +76,7 @@ public class AxiomeToolboxModule : EverestModule {
             self.TimerStopped = false;
     }
 
-    private void OnLevelEnd(On.Celeste.Level.orig_End orig, Level self) {
+    private static void OnLevelEnd(On.Celeste.Level.orig_End orig, Level self) {
         orig(self);
         if (Settings.Enabled) CheckpointPlacementManager.ClearAll();
     }

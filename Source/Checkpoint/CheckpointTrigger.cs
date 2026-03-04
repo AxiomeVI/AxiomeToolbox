@@ -11,15 +11,21 @@ public class CheckpointTrigger : Entity {
     private readonly CheckpointPlacementManager.AxiomeCheckpointData data;
     private float flash = 0f;
 
-    private const float Width = 11f;
-    private const float Height = 17f;
+    private const float Width           = 11f;
+    private const float Height          = 17f;
+    private const int   RenderDepth     = -99;  // render above most entities
+    private const float FlashFadeRate   = 3f;
+    private const float AlphaTriggered  = 0.3f;
+    private const float AlphaIdle       = 0.5f;
+    private const float AlphaFlashBoost = 0.6f;
+    private const float OutlineTriggered = 0.6f;
 
     public CheckpointTrigger(Color color, CheckpointPlacementManager.AxiomeCheckpointData data) : base(data.Position) {
         beamColor = color;
         this.data = data;
 
         Collider = new Hitbox(Width, Height, -Width / 2f, -Height / 2f);
-        Depth = -99;
+        Depth = RenderDepth;
     }
 
     public override void Update() {
@@ -34,19 +40,19 @@ public class CheckpointTrigger : Entity {
             Audio.Play("event:/game/general/assist_screenbottom");
         }
 
-        if (flash > 0f) flash -= Engine.DeltaTime * 3f;
+        if (flash > 0f) flash -= Engine.DeltaTime * FlashFadeRate;
     }
 
     public override void Render() {
         base.Render();
 
-        float alpha = data.IsTriggered ? 0.3f : 0.5f;
-        alpha += flash * 0.6f;
+        float alpha = data.IsTriggered ? AlphaTriggered : AlphaIdle;
+        alpha += flash * AlphaFlashBoost;
 
         float x = Position.X - Width / 2f;
         float y = Position.Y - Height;
 
         Draw.Rect(x, y, Width, Height, beamColor * alpha);
-        Draw.HollowRect(x, y, Width, Height, beamColor * (data.IsTriggered ? 0.6f : 1f));
+        Draw.HollowRect(x, y, Width, Height, beamColor * (data.IsTriggered ? OutlineTriggered : 1f));
     }
 }

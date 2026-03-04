@@ -3,5 +3,7 @@ AXIOME_TOOLBOX=                               Axiome Toolbox
 ENABLED=                                      Enabled
 STOP_TIMER_WHEN_PAUSED=                       Freeze the timer while the game is paused
 
-CLEAR_MIDPOINT=                               Clear All Checkpoints
-PLACE_MIDPOINT=                               Place Checkpoint
+CLEAR_CHECKPOINT=                             Clear All Checkpoints
+PLACE_CHECKPOINT=                             Place Checkpoint
+CHECKPOINT_COLOR=                             Checkpoint Color
+CHECKPOINT_COLOR_SUB=                         Color of the in-game checkpoint

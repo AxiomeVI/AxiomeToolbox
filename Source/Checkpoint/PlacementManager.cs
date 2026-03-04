@@ -6,7 +6,7 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
 
     public static class CheckpointPlacementManager {
 
-        private static Dictionary<string, List<AxiomeCheckpointData>> placements = [];
+        private static readonly Dictionary<string, List<AxiomeCheckpointData>> placements = [];
 
         public static void Load() {
             On.Celeste.Level.LoadLevel += OnLoadLevel;
@@ -16,8 +16,12 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             On.Celeste.Level.LoadLevel -= OnLoadLevel;
         }
 
-        public static void ClearAll() {
+        public static void ClearAll(Level level = null) {
             placements.Clear();
+            if (level != null) {
+                foreach (var checkpoint in level.Tracker.GetEntities<CheckpointTrigger>())
+                    checkpoint.RemoveSelf();
+            }
         }
 
         public static void ResetAllTriggeredStates() {
@@ -29,18 +33,18 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
         }
 
         public static void Update(Level level) {
-            var settings = AxiomeToolboxModule.Instance._Settings as AxiomeToolboxModuleSettings;
-            
-            if (settings?.PlaceCheckpoint.Pressed ?? false) {
+            var settings = AxiomeToolboxModule.Settings;
+
+            if (settings.PlaceCheckpoint.Pressed) {
                 PlaceCheckpointAtPlayer(level);
             }
 
-            if (settings?.ClearCheckpoints.Pressed ?? false) {
+            if (settings.ClearCheckpoints.Pressed) {
                 ClearRoomCheckpoints(level);
             }
         }
 
-        private static void PlaceCheckpointAtPlayer(Level level) {
+        public static void PlaceCheckpointAtPlayer(Level level) {
             Player player = level.Tracker.GetEntity<Player>();
             if (player == null) return;
 
@@ -53,14 +57,12 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             var data = new AxiomeCheckpointData { Position = pos, IsTriggered = false };
             placements[roomID].Add(data);
 
-            var settings = AxiomeToolboxModule.Instance._Settings as AxiomeToolboxModuleSettings;
-            Color color = Calc.HexToColor(settings?.CheckpointColor ?? "00FFFF");
-            level.Add(new CheckpointTrigger(color, data));
+            level.Add(new CheckpointTrigger(GetCheckpointColor(), data));
 
-            Audio.Play("event:/game/general/strawberry_blue_touch");
+            Audio.Play("event:/ui/main/button_select");
         }
 
-        private static void ClearRoomCheckpoints(Level level) {
+        public static void ClearRoomCheckpoints(Level level) {
             string roomID = GetRoomID(level);
 
             placements.Remove(roomID);
@@ -69,7 +71,7 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
                 checkpoint.RemoveSelf();
             }
 
-            Audio.Play("event:/ui/main/button_back");
+            Audio.Play("event:/ui/main/button_select");
         }
 
         private static void OnLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
@@ -81,14 +83,15 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
         {
             string roomID = GetRoomID(level);
             if (placements.TryGetValue(roomID, out var checkpoints)) {
-                var settings = AxiomeToolboxModule.Instance._Settings as AxiomeToolboxModuleSettings;
-                Color color = Calc.HexToColor(settings?.CheckpointColor ?? "00FFFF");
-
+                Color color = GetCheckpointColor();
                 foreach (var data in checkpoints) {
                     level.Add(new CheckpointTrigger(color, data));
                 }
             }
         }
+
+        private static Color GetCheckpointColor() =>
+            Calc.HexToColor(AxiomeToolboxModule.Settings.CheckpointColor ?? "00FFFF");
 
         private static string GetRoomID(Level level) {
             AreaKey area = level.Session.Area;

@@ -7,7 +7,7 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
     public bool Enabled { get; set; } = true;
     public bool StopTimerWhenPaused { get; set; } = false;
 
-    [SettingName(DialogIds.PlaceMidPointId)]
+    [SettingName(DialogIds.PlaceCheckpointId)]
     [DefaultButtonBinding(0, Keys.None)]
     public ButtonBinding PlaceCheckpoint { get; set; }
 
@@ -15,7 +15,7 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
     [DefaultButtonBinding(0, Keys.None)]
     public ButtonBinding ClearCheckpoints { get; set; }
 
-    [SettingName("Checkpoint Color")]
-    [SettingSubText("Color of the in-game checkpoint beam")]
+    [SettingName(DialogIds.CheckpointColorId)]
+    [SettingSubText(DialogIds.CheckpointColorSubTextId)]
     public string CheckpointColor { get; set; } = "00FFFF";  // Cyan
 }
