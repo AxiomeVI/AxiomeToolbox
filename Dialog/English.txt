@@ -16,8 +16,8 @@ DETECT_MENU_TIMING_LOSS=                      Detect lost frames on menuing
 BAD_CB_DETECTED=                              Detected bad cornerboost
 
 # ============================== Death Confirm ===================================
-LOST_DEATH_FRAMES=                            Detected 1 frame lost on death confirm
-LOST_DEATH_FRAMES_PLURAL=                     Detected {0} frames lost on death confirm
+LOST_DEATH_FRAMES=                            Detected death confirm 1 frame late
+LOST_DEATH_FRAMES_PLURAL=                     Detected death confirm {0} frames late
 
 # ============================== Menu Timing =====================================
 LOST_MENU_FRAMES=                             Detected 1 frame lost on menuing
