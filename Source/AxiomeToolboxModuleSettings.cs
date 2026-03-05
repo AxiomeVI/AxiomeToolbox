@@ -18,4 +18,13 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
     [SettingName(DialogIds.CheckpointColorId)]
     [SettingSubText(DialogIds.CheckpointColorSubTextId)]
     public string CheckpointColor { get; set; } = "00FFFF";  // Cyan
+
+    [SettingName(DialogIds.DetectBadCornerBoostId)]
+    public bool DetectBadCornerBoost { get; set; } = true;
+
+    [SettingName(DialogIds.DetectLostDeathFramesId)]
+    public bool DetectLostDeathFrames { get; set; } = true;
+
+    [SettingName(DialogIds.DetectMenuTimingLossId)]
+    public bool DetectMenuTimingLoss { get; set; } = true;
 }

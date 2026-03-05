@@ -1,10 +1,14 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using Celeste.Mod.AxiomeToolbox.BadCornerBoost;
+using Celeste.Mod.AxiomeToolbox.Checkpoint;
+using Celeste.Mod.AxiomeToolbox.DeathConfirm;
+using Celeste.Mod.AxiomeToolbox.Integration;
+using Celeste.Mod.AxiomeToolbox.MenuTiming;
+using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
 using Celeste.Mod.AxiomeToolbox.UI;
 using FMOD.Studio;
-using Celeste.Mod.AxiomeToolbox.Checkpoint;
 using MonoMod.ModInterop;
-using Celeste.Mod.AxiomeToolbox.Integration;
-using System.Collections.Generic;
 
 namespace Celeste.Mod.AxiomeToolbox;
 
@@ -34,10 +38,13 @@ public class AxiomeToolboxModule : EverestModule {
     }
 
     public override void Load() {
-        On.Celeste.Level.Update += Level_OnUpdate;
-        On.Celeste.Level.End    += OnLevelEnd;
         CheckpointPlacementManager.Load();
+        BadCornerBoostDetector.Load();
+        DeathConfirmDetector.Load();
+        MenuTimingDetector.Load();
+        StopTimerWhenPausedManager.Load();
         typeof(SaveLoadIntegration).ModInterop();
+        typeof(RoomTimerIntegration).ModInterop();
         SaveLoadInstance = SaveLoadIntegration.RegisterSaveLoadAction(
             OnSaveState,
             OnLoadState,
@@ -49,9 +56,11 @@ public class AxiomeToolboxModule : EverestModule {
     }
 
     public override void Unload() {
-        On.Celeste.Level.Update -= Level_OnUpdate;
-        On.Celeste.Level.End    -= OnLevelEnd;
         CheckpointPlacementManager.Unload();
+        BadCornerBoostDetector.Unload();
+        DeathConfirmDetector.Unload();
+        MenuTimingDetector.Unload();
+        StopTimerWhenPausedManager.Unload();
         SaveLoadIntegration.Unregister(SaveLoadInstance);
     }
 
@@ -62,40 +71,18 @@ public class AxiomeToolboxModule : EverestModule {
         CreateModMenuSectionKeyBindings(menu, inGame, pauseSnapshot);
     }
 
-    private static void Level_OnUpdate(On.Celeste.Level.orig_Update orig, Level self) {
-        orig(self);
+    private static void OnSaveState(Dictionary<Type, Dictionary<string, object>> d, Level level) {
         if (!Settings.Enabled) return;
-        
-        CheckpointPlacementManager.Update(self);
-
-        if (!Settings.StopTimerWhenPaused) return;
-
-        if (self.Paused || self.wasPaused) 
-            self.TimerStopped = true;
-        else 
-            self.TimerStopped = false;
+        CheckpointPlacementManager.OnSaveState(d, level);
     }
 
-    private static void OnLevelEnd(On.Celeste.Level.orig_End orig, Level self) {
-        orig(self);
-        if (Settings.Enabled) CheckpointPlacementManager.ClearAll();
-    }
-
-    private static void OnSaveState(Dictionary<Type, Dictionary<string, object>> _, Level level) {
+    private static void OnLoadState(Dictionary<Type, Dictionary<string, object>> d, Level level) {
         if (!Settings.Enabled) return;
-        CheckpointPlacementManager.ResetAllTriggeredStates();
-        CheckpointPlacementManager.PlaceCheckpointInLevel(level);
-    }
-
-    private static void OnLoadState(Dictionary<Type, Dictionary<string, object>> _, Level level) {
-        if (!Settings.Enabled) return;
-        CheckpointPlacementManager.ResetAllTriggeredStates();
-        CheckpointPlacementManager.PlaceCheckpointInLevel(level);
+        CheckpointPlacementManager.OnLoadState(d, level);
     }
 
     private static void OnBeforeSaveState(Level level) {
         if (!Settings.Enabled) return;
-        CheckpointPlacementManager.ResetAllTriggeredStates();
-        CheckpointPlacementManager.RemoveCheckpointEntitiesFromLevel(level);
+        CheckpointPlacementManager.OnBeforeSaveState(level);
     }
 }

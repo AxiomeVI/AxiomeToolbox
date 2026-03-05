@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Monocle;
@@ -10,10 +11,14 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
 
         public static void Load() {
             On.Celeste.Level.LoadLevel += OnLoadLevel;
+            On.Celeste.Level.Update    += OnUpdate;
+            On.Celeste.Level.End       += OnLevelEnd;
         }
 
         public static void Unload() {
             On.Celeste.Level.LoadLevel -= OnLoadLevel;
+            On.Celeste.Level.Update    -= OnUpdate;
+            On.Celeste.Level.End       -= OnLevelEnd;
         }
 
         public static void ClearAll(Level level = null) {
@@ -74,9 +79,19 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             Audio.Play("event:/ui/main/button_select");
         }
 
+        private static void OnUpdate(On.Celeste.Level.orig_Update orig, Level self) {
+            orig(self);
+            if (AxiomeToolboxModule.Settings.Enabled) Update(self);
+        }
+
+        private static void OnLevelEnd(On.Celeste.Level.orig_End orig, Level self) {
+            orig(self);
+            if (AxiomeToolboxModule.Settings.Enabled) ClearAll();
+        }
+
         private static void OnLoadLevel(On.Celeste.Level.orig_LoadLevel orig, Level self, Player.IntroTypes playerIntro, bool isFromLoader) {
             orig(self, playerIntro, isFromLoader);
-            PlaceCheckpointInLevel(self);
+            if (AxiomeToolboxModule.Settings.Enabled) PlaceCheckpointInLevel(self);
         }
 
         public static void RemoveCheckpointEntitiesFromLevel(Level level) {
@@ -101,6 +116,21 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
         private static string GetRoomID(Level level) {
             AreaKey area = level.Session.Area;
             return $"{area.SID ?? area.ID.ToString()}:{level.Session.Level}";
+        }
+
+        public static void OnSaveState(Dictionary<Type, Dictionary<string, object>> _, Level level) {
+            ResetAllTriggeredStates();
+            PlaceCheckpointInLevel(level);
+        }
+
+        public static void OnLoadState(Dictionary<Type, Dictionary<string, object>> _, Level level) {
+            ResetAllTriggeredStates();
+            PlaceCheckpointInLevel(level);
+        }
+
+        public static void OnBeforeSaveState(Level level) {
+            ResetAllTriggeredStates();
+            RemoveCheckpointEntitiesFromLevel(level);
         }
 
         public class AxiomeCheckpointData {

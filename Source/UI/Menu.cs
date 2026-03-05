@@ -1,4 +1,8 @@
+using Celeste.Mod.AxiomeToolbox.BadCornerBoost;
 using Celeste.Mod.AxiomeToolbox.Checkpoint;
+using Celeste.Mod.AxiomeToolbox.DeathConfirm;
+using Celeste.Mod.AxiomeToolbox.MenuTiming;
+using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
 using Monocle;
 
 namespace Celeste.Mod.AxiomeToolbox.UI;
@@ -10,15 +14,28 @@ public static class ModMenuOptions {
     {
         TextMenu.OnOff _stopTimerWhenPaused = (TextMenu.OnOff)new TextMenu.OnOff(
             Dialog.Clean(DialogIds.StopTimerWhenPausedId),
-            _settings.StopTimerWhenPaused).Change(
+            _settings.StopTimerWhenPaused) { Visible = _settings.Enabled }.Change(
                 value =>
                 {
                     _settings.StopTimerWhenPaused = value;
-                    if (!value && Engine.Scene is Level level) {
-                        level.TimerStopped = false;
-                    }
+                    if (!value) StopTimerWhenPausedManager.Reset();
                 }
         );
+
+        TextMenu.OnOff detectBadCB = (TextMenu.OnOff)new TextMenu.OnOff(
+            Dialog.Clean(DialogIds.DetectBadCornerBoostId), _settings.DetectBadCornerBoost)
+            { Visible = _settings.Enabled }
+            .Change(v => { _settings.DetectBadCornerBoost = v; if (!v) BadCornerBoostDetector.Reset(); });
+
+        TextMenu.OnOff detectDeathFrames = (TextMenu.OnOff)new TextMenu.OnOff(
+            Dialog.Clean(DialogIds.DetectLostDeathFramesId), _settings.DetectLostDeathFrames)
+            { Visible = _settings.Enabled }
+            .Change(v => { _settings.DetectLostDeathFrames = v; if (!v) DeathConfirmDetector.Reset(); });
+
+        TextMenu.OnOff detectMenuTiming = (TextMenu.OnOff)new TextMenu.OnOff(
+            Dialog.Clean(DialogIds.DetectMenuTimingLossId), _settings.DetectMenuTimingLoss)
+            { Visible = _settings.Enabled }
+            .Change(v => { _settings.DetectMenuTimingLoss = v; if (!v) MenuTimingDetector.Reset(); });
 
         TextMenu.Button placeButton = null;
         TextMenu.Button clearButton = null;
@@ -42,20 +59,27 @@ public static class ModMenuOptions {
             {
                 _settings.Enabled = value;
                 _stopTimerWhenPaused.Visible = value;
+                detectBadCB.Visible = value;
+                detectDeathFrames.Visible = value;
+                detectMenuTiming.Visible = value;
                 if (inGame) {
                     placeButton.Visible = value;
                     clearButton.Visible = value;
                 }
                 if (!value) {
+                    BadCornerBoostDetector.Reset();
+                    DeathConfirmDetector.Reset();
+                    MenuTimingDetector.Reset();
                     CheckpointPlacementManager.ClearAll(Engine.Scene as Level);
-                    if (_settings.StopTimerWhenPaused && Engine.Scene is Level level) {
-                        level.TimerStopped = false;
-                    }
+                    StopTimerWhenPausedManager.Reset();
                 }
             }
         ));
 
         menu.Add(_stopTimerWhenPaused);
+        menu.Add(detectBadCB);
+        menu.Add(detectDeathFrames);
+        menu.Add(detectMenuTiming);
 
         if (inGame) {
             menu.Add(placeButton);

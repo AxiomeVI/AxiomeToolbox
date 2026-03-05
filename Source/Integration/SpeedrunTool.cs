@@ -12,3 +12,8 @@ public static class SaveLoadIntegration
         Action<Level>, Action<Level>, Action, object> RegisterSaveLoadAction;
     public static Action<object> Unregister;
 }
+
+[ModImportName("SpeedrunTool.RoomTimer")]
+public static class RoomTimerIntegration {
+    public static Func<long> GetRoomTime;
+}

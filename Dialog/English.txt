@@ -3,7 +3,22 @@ AXIOME_TOOLBOX=                               Axiome Toolbox
 ENABLED=                                      Enabled
 STOP_TIMER_WHEN_PAUSED=                       Freeze the timer while the game is paused
 
-CLEAR_CHECKPOINT=                             Clear All Checkpoints
-PLACE_CHECKPOINT=                             Place Checkpoint
+CLEAR_CHECKPOINT=                             Clear all checkpoints
+PLACE_CHECKPOINT=                             Place a checkpoint
 CHECKPOINT_COLOR=                             Checkpoint Color
 CHECKPOINT_COLOR_SUB=                         Color of the in-game checkpoint
+
+DETECT_BAD_CORNER_BOOST=                      Detect bad corner boost
+DETECT_LOST_DEATH_FRAMES=                     Detect lost frames on death confirm
+DETECT_MENU_TIMING_LOSS=                      Detect lost frames on menuing
+
+# ============================== Bad Corner Boost ================================
+BAD_CB_DETECTED=                              Detected bad cornerboost
+
+# ============================== Death Confirm ===================================
+LOST_DEATH_FRAMES=                            Detected 1 frame lost on death confirm
+LOST_DEATH_FRAMES_PLURAL=                     Detected {0} frames lost on death confirm
+
+# ============================== Menu Timing =====================================
+LOST_MENU_FRAMES=                             Detected 1 frame lost on menuing
+LOST_MENU_FRAMES_PLURAL=                      Detected {0} frames lost on menuing
