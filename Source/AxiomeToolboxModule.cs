@@ -5,6 +5,7 @@ using Celeste.Mod.AxiomeToolbox.Checkpoint;
 using Celeste.Mod.AxiomeToolbox.DeathConfirm;
 using Celeste.Mod.AxiomeToolbox.Integration;
 using Celeste.Mod.AxiomeToolbox.MenuTiming;
+using Celeste.Mod.AxiomeToolbox.WaterBoost;
 using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
 using Celeste.Mod.AxiomeToolbox.UI;
 using FMOD.Studio;
@@ -42,6 +43,7 @@ public class AxiomeToolboxModule : EverestModule {
         BadCornerBoostDetector.Load();
         DeathConfirmDetector.Load();
         MenuTimingDetector.Load();
+        WaterBoostDetector.Load();
         StopTimerWhenPausedManager.Load();
         typeof(SaveLoadIntegration).ModInterop();
         typeof(RoomTimerIntegration).ModInterop();
@@ -60,6 +62,7 @@ public class AxiomeToolboxModule : EverestModule {
         BadCornerBoostDetector.Unload();
         DeathConfirmDetector.Unload();
         MenuTimingDetector.Unload();
+        WaterBoostDetector.Unload();
         StopTimerWhenPausedManager.Unload();
         SaveLoadIntegration.Unregister(SaveLoadInstance);
     }

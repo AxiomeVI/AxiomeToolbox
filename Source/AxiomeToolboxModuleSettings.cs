@@ -27,4 +27,7 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
 
     [SettingName(DialogIds.DetectMenuTimingLossId)]
     public bool DetectMenuTimingLoss { get; set; } = true;
+
+    [SettingName(DialogIds.DetectFailedWaterBoostId)]
+    public bool DetectFailedWaterBoost { get; set; } = true;
 }

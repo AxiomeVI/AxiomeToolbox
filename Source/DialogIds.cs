@@ -24,4 +24,8 @@ public static class DialogIds {
     // Menu Timing
     public const string LostMenuFramesId       = "LOST_MENU_FRAMES";
     public const string LostMenuFramesPluralId = "LOST_MENU_FRAMES_PLURAL";
+
+    // Water Boost
+    public const string DetectFailedWaterBoostId = "DETECT_FAILED_WATER_BOOST";
+    public const string FailedWaterBoostId       = "FAILED_WATER_BOOST";
 }

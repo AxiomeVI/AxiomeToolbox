@@ -2,6 +2,7 @@ using Celeste.Mod.AxiomeToolbox.BadCornerBoost;
 using Celeste.Mod.AxiomeToolbox.Checkpoint;
 using Celeste.Mod.AxiomeToolbox.DeathConfirm;
 using Celeste.Mod.AxiomeToolbox.MenuTiming;
+using Celeste.Mod.AxiomeToolbox.WaterBoost;
 using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
 using Monocle;
 
@@ -37,6 +38,11 @@ public static class ModMenuOptions {
             { Visible = _settings.Enabled }
             .Change(v => { _settings.DetectMenuTimingLoss = v; if (!v) MenuTimingDetector.Reset(); });
 
+        TextMenu.OnOff detectWaterBoost = (TextMenu.OnOff)new TextMenu.OnOff(
+            Dialog.Clean(DialogIds.DetectFailedWaterBoostId), _settings.DetectFailedWaterBoost)
+            { Visible = _settings.Enabled }
+            .Change(v => { _settings.DetectFailedWaterBoost = v; if (!v) WaterBoostDetector.Reset(); });
+
         TextMenu.Button placeButton = null;
         TextMenu.Button clearButton = null;
 
@@ -62,6 +68,7 @@ public static class ModMenuOptions {
                 detectBadCB.Visible = value;
                 detectDeathFrames.Visible = value;
                 detectMenuTiming.Visible = value;
+                detectWaterBoost.Visible = value;
                 if (inGame) {
                     placeButton.Visible = value;
                     clearButton.Visible = value;
@@ -70,6 +77,7 @@ public static class ModMenuOptions {
                     BadCornerBoostDetector.Reset();
                     DeathConfirmDetector.Reset();
                     MenuTimingDetector.Reset();
+                    WaterBoostDetector.Reset();
                     CheckpointPlacementManager.ClearAll(Engine.Scene as Level);
                     StopTimerWhenPausedManager.Reset();
                 }
@@ -80,6 +88,7 @@ public static class ModMenuOptions {
         menu.Add(detectBadCB);
         menu.Add(detectDeathFrames);
         menu.Add(detectMenuTiming);
+        menu.Add(detectWaterBoost);
 
         if (inGame) {
             menu.Add(placeButton);
