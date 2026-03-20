@@ -17,7 +17,10 @@ public static class WaterBoostDetector {
         On.Celeste.Player.Boost        += OnBoost;
         On.Celeste.Player.RedBoost     += OnRedBoost;
         On.Celeste.Player.ClimbBegin   += OnClimbBegin;
-        On.Celeste.Player.Die          += OnDie;
+        On.Celeste.Player.SuperJump     += OnSuperJump;
+        On.Celeste.Player.WallJump      += OnWallJump;
+        On.Celeste.Player.SuperWallJump += OnSuperWallJump;
+        On.Celeste.Player.Die           += OnDie;
         On.Celeste.Player.OnTransition += OnTransition;
         On.Celeste.Level.Update        += OnUpdate;
     }
@@ -28,7 +31,10 @@ public static class WaterBoostDetector {
         On.Celeste.Player.Boost        -= OnBoost;
         On.Celeste.Player.RedBoost     -= OnRedBoost;
         On.Celeste.Player.ClimbBegin   -= OnClimbBegin;
-        On.Celeste.Player.Die          -= OnDie;
+        On.Celeste.Player.SuperJump     -= OnSuperJump;
+        On.Celeste.Player.WallJump      -= OnWallJump;
+        On.Celeste.Player.SuperWallJump -= OnSuperWallJump;
+        On.Celeste.Player.Die           -= OnDie;
         On.Celeste.Player.OnTransition -= OnTransition;
         On.Celeste.Level.Update        -= OnUpdate;
     }
@@ -41,8 +47,12 @@ public static class WaterBoostDetector {
     }
 
     private static void Evaluate() {
-        if (jumpsFired < jumpInputs)
-            NotificationUtils.Show(Dialog.Clean(DialogIds.FailedWaterBoostId));
+        if (jumpsFired < jumpInputs) {
+            string msg = jumpsFired == 1
+                ? string.Format(Dialog.Get(DialogIds.FailedWaterBoostId), jumpInputs)
+                : string.Format(Dialog.Get(DialogIds.FailedWaterBoostPluralId), jumpsFired, jumpInputs);
+            NotificationUtils.Show(msg);
+        }
         jumpInputs     = 0;
         jumpsFired     = 0;
         framesUntilEnd = -1;
@@ -70,6 +80,24 @@ public static class WaterBoostDetector {
                 Evaluate();
         }
         orig(self, particles, playSfx);
+    }
+
+    private static void OnSuperJump(On.Celeste.Player.orig_SuperJump orig, Player self) {
+        if (AxiomeToolboxModule.Settings.Enabled && AxiomeToolboxModule.Settings.DetectFailedWaterBoost)
+            if (IsSequenceActive()) jumpsFired++;
+        orig(self);
+    }
+
+    private static void OnWallJump(On.Celeste.Player.orig_WallJump orig, Player self, int dir) {
+        if (AxiomeToolboxModule.Settings.Enabled && AxiomeToolboxModule.Settings.DetectFailedWaterBoost)
+            if (IsSequenceActive()) jumpsFired++;
+        orig(self, dir);
+    }
+
+    private static void OnSuperWallJump(On.Celeste.Player.orig_SuperWallJump orig, Player self, int dir) {
+        if (AxiomeToolboxModule.Settings.Enabled && AxiomeToolboxModule.Settings.DetectFailedWaterBoost)
+            if (IsSequenceActive()) jumpsFired++;
+        orig(self, dir);
     }
 
     private static void OnDashBegin(On.Celeste.Player.orig_DashBegin orig, Player self) {
@@ -118,9 +146,11 @@ public static class WaterBoostDetector {
 
         // Read jump input BEFORE orig (before Player.Update consumes the buffer)
         var player = self.Tracker.GetEntity<Player>();
-        bool onSurface = player != null && player.CollideFirst<Water>(player.Position + Vector2.UnitY * 2f) != null;
+        bool onSurface = player != null
+            && player.StateMachine.State != Player.StSwim
+            && player.CollideFirst<Water>(player.Position + Vector2.UnitY * 2f) != null;
 
-        if (onSurface) {
+        if (onSurface && !self.Paused) {
             int pressed = CountJumpPressed();
             if (pressed > 0) jumpInputs += pressed;
         }
@@ -130,18 +160,21 @@ public static class WaterBoostDetector {
         // Immediate end: landed, or entered a state that ends the waterboost context
         if (player != null && IsSequenceActive()) {
             int state = player.StateMachine.State;
-            if (player.onGround
+            if (state == Player.StSwim)
+                Reset();
+            else if (player.onGround
                 || state == Player.StDummy
                 || state == Player.StStarFly
                 || state == Player.StLaunch
                 || state == Player.StFlingBird
-                || state == Player.StCassetteFly)
+                || state == Player.StCassetteFly
+                || state == Player.StRedDash)
                 Evaluate();
         }
 
         // Start countdown when player leaves surface
-        if (wasOnSurface && !onSurface && framesUntilEnd < 0)
-            framesUntilEnd = 10;
+        if (player.StateMachine.State != Player.StSwim && wasOnSurface && !onSurface && framesUntilEnd < 0)
+            framesUntilEnd = 6;
 
         // Tick countdown
         if (framesUntilEnd > 0)

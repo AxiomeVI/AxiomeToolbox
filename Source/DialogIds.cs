@@ -26,6 +26,7 @@ public static class DialogIds {
     public const string LostMenuFramesPluralId = "LOST_MENU_FRAMES_PLURAL";
 
     // Water Boost
-    public const string DetectFailedWaterBoostId = "DETECT_FAILED_WATER_BOOST";
-    public const string FailedWaterBoostId       = "FAILED_WATER_BOOST";
+    public const string DetectFailedWaterBoostId  = "DETECT_FAILED_WATER_BOOST";
+    public const string FailedWaterBoostId        = "FAILED_WATER_BOOST";
+    public const string FailedWaterBoostPluralId  = "FAILED_WATER_BOOST_PLURAL";
 }

@@ -25,4 +25,5 @@ LOST_MENU_FRAMES=                             Detected 1 frame lost on menuing
 LOST_MENU_FRAMES_PLURAL=                      Detected {0} frames lost on menuing
 
 # ============================== Water Boost =====================================
-FAILED_WATER_BOOST=                           Detected failed waterboost
+FAILED_WATER_BOOST=                           Detected failed waterboost (1 jump / {0} inputs)
+FAILED_WATER_BOOST_PLURAL=                    Detected failed waterboost ({0} jumps / {1} inputs)
