@@ -17,8 +17,12 @@ internal class KeybindConfigUi : TextMenu {
     private Slot _remappingSlot;
     private float _timeout;
 
-    // Derived from _remappingSlot — no separate field needed
+    // Derived from _remappingSlot — no separate fields needed
     private bool IsRemappingKeyboard => _remappingSlot is Slot.PlaceKeyboard or Slot.ClearKeyboard;
+    private string RemappingLabel => Dialog.Clean(
+        _remappingSlot is Slot.PlaceKeyboard or Slot.PlaceController
+            ? DialogIds.PlaceCheckpointId
+            : DialogIds.ClearCheckpointId);
 
     private static readonly Buttons[] AllButtons = {
         Buttons.A, Buttons.B, Buttons.X, Buttons.Y,
@@ -140,6 +144,11 @@ internal class KeybindConfigUi : TextMenu {
                 pos + new Vector2(0f, -8f),
                 new Vector2(0.5f, 1f), Vector2.One * 0.7f,
                 Color.LightGray * Ease.CubeIn(_remappingEase));
+            ActiveFont.Draw(
+                RemappingLabel,
+                pos + new Vector2(0f, 8f),
+                new Vector2(0.5f, 0f), Vector2.One * 2f,
+                Color.White * Ease.CubeIn(_remappingEase));
         } else {
             ActiveFont.Draw(
                 Dialog.Clean(DialogIds.BtnConfigNoController),
