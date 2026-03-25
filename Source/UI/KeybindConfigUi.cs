@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Monocle;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Celeste.Mod.AxiomeToolbox.UI;
@@ -13,9 +14,11 @@ internal class KeybindConfigUi : TextMenu {
     private float _inputDelay;
     private bool _remapping;
     private float _remappingEase;
-    private bool _remappingKeyboard;
     private Slot _remappingSlot;
     private float _timeout;
+
+    // Derived from _remappingSlot — no separate field needed
+    private bool IsRemappingKeyboard => _remappingSlot is Slot.PlaceKeyboard or Slot.ClearKeyboard;
 
     private static readonly Buttons[] AllButtons = {
         Buttons.A, Buttons.B, Buttons.X, Buttons.Y,
@@ -40,13 +43,13 @@ internal class KeybindConfigUi : TextMenu {
 
         Add(new Header(Dialog.Clean(DialogIds.KeybindConfigId)));
 
-        Add(new SubHeader(Dialog.Clean("KEY_CONFIG_TITLE")));
+        Add(new SubHeader(Dialog.Clean(DialogIds.KeyConfigTitle)));
         Add(new Setting(Dialog.Clean(DialogIds.PlaceCheckpointId), s.PlaceCheckpoint.Keys)
             .Pressed(() => StartRemap(Slot.PlaceKeyboard)));
         Add(new Setting(Dialog.Clean(DialogIds.ClearCheckpointId), s.ClearCheckpoints.Keys)
             .Pressed(() => StartRemap(Slot.ClearKeyboard)));
 
-        Add(new SubHeader(Dialog.Clean("BTN_CONFIG_TITLE")));
+        Add(new SubHeader(Dialog.Clean(DialogIds.BtnConfigTitle)));
         Add(new Setting(Dialog.Clean(DialogIds.PlaceCheckpointId), s.PlaceCheckpoint.Buttons)
             .Pressed(() => StartRemap(Slot.PlaceController)));
         Add(new Setting(Dialog.Clean(DialogIds.ClearCheckpointId), s.ClearCheckpoints.Buttons)
@@ -57,32 +60,30 @@ internal class KeybindConfigUi : TextMenu {
 
     private void StartRemap(Slot slot) {
         _remapping = true;
-        _remappingKeyboard = slot is Slot.PlaceKeyboard or Slot.ClearKeyboard;
         _remappingSlot = slot;
         _timeout = 5f;
         Focused = false;
     }
 
-    private void ApplyRemap(Keys key) {
+    private void ApplyRemap<T>(T input, List<T> list) {
         _remapping = false;
         _inputDelay = 0.25f;
-        var list = _remappingSlot is Slot.PlaceKeyboard
-            ? AxiomeToolboxModule.Settings.PlaceCheckpoint.Keys
-            : AxiomeToolboxModule.Settings.ClearCheckpoints.Keys;
-        if (list.Contains(key)) list.Remove(key);
-        else list.Add(key);
+        if (!list.Remove(input)) list.Add(input);
         Reload(Selection);
     }
 
+    private void ApplyRemap(Keys key) {
+        var list = _remappingSlot is Slot.PlaceKeyboard
+            ? AxiomeToolboxModule.Settings.PlaceCheckpoint.Keys
+            : AxiomeToolboxModule.Settings.ClearCheckpoints.Keys;
+        ApplyRemap(key, list);
+    }
+
     private void ApplyRemap(Buttons button) {
-        _remapping = false;
-        _inputDelay = 0.25f;
         var list = _remappingSlot is Slot.PlaceController
             ? AxiomeToolboxModule.Settings.PlaceCheckpoint.Buttons
             : AxiomeToolboxModule.Settings.ClearCheckpoints.Buttons;
-        if (list.Contains(button)) list.Remove(button);
-        else list.Add(button);
-        Reload(Selection);
+        ApplyRemap(button, list);
     }
 
     public override void Update() {
@@ -100,7 +101,7 @@ internal class KeybindConfigUi : TextMenu {
                 Input.ESC.ConsumePress();
                 _remapping = false;
                 Focused = true;
-            } else if (_remappingKeyboard) {
+            } else if (IsRemappingKeyboard) {
                 Keys[] pressed = MInput.Keyboard.CurrentState.GetPressedKeys();
                 if (pressed?.LastOrDefault() is { } k && MInput.Keyboard.Pressed(k))
                     ApplyRemap(k);
@@ -128,20 +129,20 @@ internal class KeybindConfigUi : TextMenu {
         Draw.Rect(-10f, -10f, 1940f, 1100f, Color.Black * 0.95f * Ease.CubeInOut(_remappingEase));
         Vector2 pos = new Vector2(1920f, 1080f) * 0.5f;
 
-        if (_remappingKeyboard || Input.GuiInputController()) {
+        if (IsRemappingKeyboard || Input.GuiInputController()) {
             ActiveFont.Draw(
                 Dialog.Clean(DialogIds.KeybindComboSubId),
                 pos + new Vector2(0f, -32f),
                 new Vector2(0.5f, 2f), Vector2.One * 0.7f,
                 Color.LightGray * Ease.CubeIn(_remappingEase));
             ActiveFont.Draw(
-                Dialog.Clean(_remappingKeyboard ? "KEY_CONFIG_CHANGING" : "BTN_CONFIG_CHANGING"),
+                Dialog.Clean(IsRemappingKeyboard ? DialogIds.KeyConfigChanging : DialogIds.BtnConfigChanging),
                 pos + new Vector2(0f, -8f),
                 new Vector2(0.5f, 1f), Vector2.One * 0.7f,
                 Color.LightGray * Ease.CubeIn(_remappingEase));
         } else {
             ActiveFont.Draw(
-                Dialog.Clean("BTN_CONFIG_NOCONTROLLER"),
+                Dialog.Clean(DialogIds.BtnConfigNoController),
                 pos, new Vector2(0.5f, 0.5f), Vector2.One,
                 Color.White * Ease.CubeIn(_remappingEase));
         }
