@@ -12,23 +12,23 @@ public static class WaterBoostDetector {
     private static int  framesUntilEnd; // -1 = inactive; 0+ = counting down
 
     public static void Load() {
-        On.Celeste.Player.Jump         += OnJump;
+        On.Celeste.Player.Jump          += OnJump;
         On.Celeste.Player.SuperJump     += OnSuperJump;
         On.Celeste.Player.WallJump      += OnWallJump;
         On.Celeste.Player.SuperWallJump += OnSuperWallJump;
         On.Celeste.Player.Die           += OnDie;
-        On.Celeste.Player.OnTransition += OnTransition;
-        On.Celeste.Level.Update        += OnUpdate;
+        On.Celeste.Player.OnTransition  += OnTransition;
+        On.Celeste.Level.Update         += OnUpdate;
     }
 
     public static void Unload() {
-        On.Celeste.Player.Jump         -= OnJump;
+        On.Celeste.Player.Jump          -= OnJump;
         On.Celeste.Player.SuperJump     -= OnSuperJump;
         On.Celeste.Player.WallJump      -= OnWallJump;
         On.Celeste.Player.SuperWallJump -= OnSuperWallJump;
         On.Celeste.Player.Die           -= OnDie;
-        On.Celeste.Player.OnTransition -= OnTransition;
-        On.Celeste.Level.Update        -= OnUpdate;
+        On.Celeste.Player.OnTransition  -= OnTransition;
+        On.Celeste.Level.Update         -= OnUpdate;
     }
 
     public static void Reset() {

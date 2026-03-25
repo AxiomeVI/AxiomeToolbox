@@ -5,9 +5,12 @@ public static class DialogIds {
     public const string StopTimerWhenPausedId = "STOP_TIMER_WHEN_PAUSED";
     public const string ClearCheckpointId = "CLEAR_CHECKPOINT";
     public const string PlaceCheckpointId = "PLACE_CHECKPOINT";
+    public const string KeybindComboSubId  = "KEYBIND_COMBO_SUB";
     public const string EnabledId = "ENABLED";
     public const string CheckpointColorId = "CHECKPOINT_COLOR";
     public const string CheckpointColorSubTextId = "CHECKPOINT_COLOR_SUB";
+
+    public const string KeybindConfigId = "KEYBIND_CONFIG";
 
     // Settings — detectors
     public const string DetectBadCornerBoostId  = "DETECT_BAD_CORNER_BOOST";

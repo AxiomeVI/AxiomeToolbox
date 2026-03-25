@@ -8,10 +8,12 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
     public bool StopTimerWhenPaused { get; set; } = false;
 
     [SettingName(DialogIds.PlaceCheckpointId)]
+    [SettingSubText(DialogIds.KeybindComboSubId)]
     [DefaultButtonBinding(0, Keys.None)]
     public ButtonBinding PlaceCheckpoint { get; set; }
 
     [SettingName(DialogIds.ClearCheckpointId)]
+    [SettingSubText(DialogIds.KeybindComboSubId)]
     [DefaultButtonBinding(0, Keys.None)]
     public ButtonBinding ClearCheckpoints { get; set; }
 
