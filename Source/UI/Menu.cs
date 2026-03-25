@@ -55,6 +55,17 @@ public static class ModMenuOptions {
             OnPressed = () => CheckpointPlacementManager.ClearAll(Engine.Scene as Level)
         };
 
+        TextMenu.Button keybindButton = new TextMenu.Button(Dialog.Clean(DialogIds.KeybindConfigId)) {
+            Visible = _settings.Enabled
+        };
+        keybindButton.Pressed(() => {
+            menu.Focused = false;
+            var ui = new KeybindConfigUi();
+            ui.OnClose = () => menu.Focused = true;
+            Engine.Scene.Add(ui);
+            Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
+        });
+
         menu.Add(new TextMenu.OnOff(Dialog.Clean(DialogIds.EnabledId), _settings.Enabled).Change(
             value =>
             {
@@ -66,6 +77,7 @@ public static class ModMenuOptions {
                 detectWaterBoost.Visible = value;
                 placeButton.Visible = value;
                 clearButton.Visible = value;
+                keybindButton.Visible = value;
                 if (!value) {
                     BadCornerBoostDetector.Reset();
                     DeathConfirmDetector.Reset();
@@ -84,5 +96,6 @@ public static class ModMenuOptions {
         menu.Add(detectWaterBoost);
         menu.Add(placeButton);
         menu.Add(clearButton);
+        menu.Add(keybindButton);
     }
 }

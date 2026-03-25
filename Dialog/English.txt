@@ -5,8 +5,11 @@ STOP_TIMER_WHEN_PAUSED=                       Freeze the timer while the game is
 
 CLEAR_CHECKPOINT=                             Clear all checkpoints
 PLACE_CHECKPOINT=                             Place a checkpoint
+KEYBIND_COMBO_SUB=                            Binding multiple keys acts as a key combo (all must be held)
 CHECKPOINT_COLOR=                             Checkpoint Color
 CHECKPOINT_COLOR_SUB=                         Color of the in-game checkpoint
+
+KEYBIND_CONFIG=                               Hotkeys
 
 DETECT_BAD_CORNER_BOOST=                      Detect bad corner boost
 DETECT_LOST_DEATH_FRAMES=                     Detect lost frames on death confirm

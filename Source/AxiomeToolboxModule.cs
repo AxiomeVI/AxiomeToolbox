@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Celeste.Mod.AxiomeToolbox.BadCornerBoost;
 using Celeste.Mod.AxiomeToolbox.Checkpoint;
@@ -71,7 +71,6 @@ public class AxiomeToolboxModule : EverestModule {
     {
         CreateModMenuSectionHeader(menu, inGame, pauseSnapshot);
         ModMenuOptions.CreateMenu(menu, inGame);
-        CreateModMenuSectionKeyBindings(menu, inGame, pauseSnapshot);
     }
 
     private static void OnSaveState(Dictionary<Type, Dictionary<string, object>> d, Level level) {

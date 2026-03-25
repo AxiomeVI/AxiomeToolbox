@@ -5,9 +5,19 @@ public static class DialogIds {
     public const string StopTimerWhenPausedId = "STOP_TIMER_WHEN_PAUSED";
     public const string ClearCheckpointId = "CLEAR_CHECKPOINT";
     public const string PlaceCheckpointId = "PLACE_CHECKPOINT";
+    public const string KeybindComboSubId  = "KEYBIND_COMBO_SUB";
     public const string EnabledId = "ENABLED";
     public const string CheckpointColorId = "CHECKPOINT_COLOR";
     public const string CheckpointColorSubTextId = "CHECKPOINT_COLOR_SUB";
+
+    public const string KeybindConfigId = "KEYBIND_CONFIG";
+
+    // Vanilla Celeste keybind UI keys (used in KeybindConfigUi)
+    public const string KeyConfigTitle      = "KEY_CONFIG_TITLE";
+    public const string BtnConfigTitle      = "BTN_CONFIG_TITLE";
+    public const string KeyConfigChanging   = "KEY_CONFIG_CHANGING";
+    public const string BtnConfigChanging   = "BTN_CONFIG_CHANGING";
+    public const string BtnConfigNoController = "BTN_CONFIG_NOCONTROLLER";
 
     // Settings — detectors
     public const string DetectBadCornerBoostId  = "DETECT_BAD_CORNER_BOOST";

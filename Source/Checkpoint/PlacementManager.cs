@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Celeste.Mod.AxiomeToolbox.Hotkeys;
 using Microsoft.Xna.Framework;
 using Monocle;
 
@@ -9,16 +10,23 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
 
         private static readonly Dictionary<string, List<AxiomeCheckpointData>> placements = [];
 
+        private static ComboHotkey _placeHotkey;
+        private static ComboHotkey _clearHotkey;
+
         public static void Load() {
             On.Celeste.Level.LoadLevel += OnLoadLevel;
             On.Celeste.Level.Update    += OnUpdate;
             On.Celeste.Level.End       += OnLevelEnd;
+            _placeHotkey = new ComboHotkey(AxiomeToolboxModule.Settings.PlaceCheckpoint);
+            _clearHotkey = new ComboHotkey(AxiomeToolboxModule.Settings.ClearCheckpoints);
         }
 
         public static void Unload() {
             On.Celeste.Level.LoadLevel -= OnLoadLevel;
             On.Celeste.Level.Update    -= OnUpdate;
             On.Celeste.Level.End       -= OnLevelEnd;
+            _placeHotkey = null;
+            _clearHotkey = null;
         }
 
         public static void ClearAll(Level level = null) {
@@ -38,15 +46,14 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
         }
 
         public static void Update(Level level) {
-            var settings = AxiomeToolboxModule.Settings;
+            if (!AxiomeToolboxModule.Settings.Enabled) return;
 
-            if (settings.PlaceCheckpoint.Pressed) {
-                PlaceCheckpointAtPlayer(level);
-            }
+            ComboHotkey.UpdateStates();
+            _placeHotkey.Update();
+            _clearHotkey.Update();
 
-            if (settings.ClearCheckpoints.Pressed) {
-                ClearRoomCheckpoints(level);
-            }
+            if (_placeHotkey.Pressed) PlaceCheckpointAtPlayer(level);
+            if (_clearHotkey.Pressed) ClearAll(Engine.Scene as Level);
         }
 
         public static void PlaceCheckpointAtPlayer(Level level) {
