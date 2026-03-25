@@ -43,22 +43,17 @@ public static class ModMenuOptions {
             { Visible = _settings.Enabled }
             .Change(v => { _settings.DetectFailedWaterBoost = v; if (!v) WaterBoostDetector.Reset(); });
 
-        TextMenu.Button placeButton = null;
-        TextMenu.Button clearButton = null;
+        TextMenu.Button placeButton = new TextMenu.Button(Dialog.Clean(DialogIds.PlaceCheckpointId)) {
+            Visible = _settings.Enabled,
+            Disabled = !inGame,
+            OnPressed = () => { if (Engine.Scene is Level l) CheckpointPlacementManager.PlaceCheckpointAtPlayer(l); }
+        };
 
-        if (inGame) {
-            Level level = Engine.Scene as Level;
-
-            placeButton = new TextMenu.Button(Dialog.Clean(DialogIds.PlaceCheckpointId)) {
-                Visible = _settings.Enabled,
-                OnPressed = () => CheckpointPlacementManager.PlaceCheckpointAtPlayer(level)
-            };
-
-            clearButton = new TextMenu.Button(Dialog.Clean(DialogIds.ClearCheckpointId)) {
-                Visible = _settings.Enabled,
-                OnPressed = () => CheckpointPlacementManager.ClearRoomCheckpoints(level)
-            };
-        }
+        TextMenu.Button clearButton = new TextMenu.Button(Dialog.Clean(DialogIds.ClearCheckpointId)) {
+            Visible = _settings.Enabled,
+            Disabled = !inGame,
+            OnPressed = () => CheckpointPlacementManager.ClearAll(Engine.Scene as Level)
+        };
 
         menu.Add(new TextMenu.OnOff(Dialog.Clean(DialogIds.EnabledId), _settings.Enabled).Change(
             value =>
@@ -69,10 +64,8 @@ public static class ModMenuOptions {
                 detectDeathFrames.Visible = value;
                 detectMenuTiming.Visible = value;
                 detectWaterBoost.Visible = value;
-                if (inGame) {
-                    placeButton.Visible = value;
-                    clearButton.Visible = value;
-                }
+                placeButton.Visible = value;
+                clearButton.Visible = value;
                 if (!value) {
                     BadCornerBoostDetector.Reset();
                     DeathConfirmDetector.Reset();
@@ -89,10 +82,7 @@ public static class ModMenuOptions {
         menu.Add(detectDeathFrames);
         menu.Add(detectMenuTiming);
         menu.Add(detectWaterBoost);
-
-        if (inGame) {
-            menu.Add(placeButton);
-            menu.Add(clearButton);
-        }
+        menu.Add(placeButton);
+        menu.Add(clearButton);
     }
 }
