@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework.Input;
+using Celeste.Mod.AxiomeToolbox.Timeline;
 
 namespace Celeste.Mod.AxiomeToolbox;
 [SettingName(DialogIds.AxiomeToolboxId)]
@@ -32,4 +33,17 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
 
     [SettingName(DialogIds.DetectFailedWaterBoostId)]
     public bool DetectFailedWaterBoost { get; set; } = true;
+
+    [SettingName(DialogIds.TimelinePositionId)]
+    [SettingIgnore]
+    public HudCorner TimelinePosition { get; set; } = HudCorner.BottomRight;
+
+    [SettingName(DialogIds.TimelineWindowSizeId)]
+    [SettingIgnore]
+    public int TimelineWindowSize { get; set; } = 120;
+
+    [SettingName(DialogIds.TimelineInspectId)]
+    [SettingSubText(DialogIds.KeybindComboSubId)]
+    [DefaultButtonBinding(0, Keys.None)]
+    public ButtonBinding TimelineInspect { get; set; }
 }

@@ -9,6 +9,7 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
     public static class CheckpointPlacementManager {
 
         private static readonly Dictionary<string, List<AxiomeCheckpointData>> placements = [];
+        private static readonly List<CheckpointTrigger> _activeTriggers = [];
 
         private static ComboHotkey _placeHotkey;
         private static ComboHotkey _clearHotkey;
@@ -29,12 +30,12 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             _clearHotkey = null;
         }
 
-        public static void ClearAll(Level level = null) {
+        public static void ClearAll() {
             placements.Clear();
-            if (level != null) {
-                foreach (var checkpoint in level.Tracker.GetEntities<CheckpointTrigger>())
-                    checkpoint.RemoveSelf();
-            }
+            foreach (var trigger in _activeTriggers)
+                trigger.RemoveSelf();
+            _activeTriggers.Clear();
+            Audio.Play("event:/ui/main/button_select");
         }
 
         public static void ResetAllTriggeredStates() {
@@ -53,7 +54,7 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             _clearHotkey.Update();
 
             if (_placeHotkey.Pressed) PlaceCheckpointAtPlayer(level);
-            if (_clearHotkey.Pressed) ClearAll(Engine.Scene as Level);
+            if (_clearHotkey.Pressed) ClearAll();
         }
 
         public static void PlaceCheckpointAtPlayer(Level level) {
@@ -69,22 +70,17 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             var data = new AxiomeCheckpointData { Position = pos, IsTriggered = false };
             placements[roomID].Add(data);
 
-            level.Add(new CheckpointTrigger(GetCheckpointColor(), data));
+            var trigger = new CheckpointTrigger(GetCheckpointColor(), data);
+            level.Add(trigger);
+            _activeTriggers.Add(trigger);
 
             Audio.Play("event:/ui/main/button_select");
         }
 
-        public static void ClearRoomCheckpoints(Level level) {
-            string roomID = GetRoomID(level);
-
-            placements.Remove(roomID);
-
-            foreach (var checkpoint in level.Tracker.GetEntities<CheckpointTrigger>()) {
-                checkpoint.RemoveSelf();
-            }
-
-            Audio.Play("event:/ui/main/button_select");
-        }
+        // Called by CheckpointTrigger.Removed so _activeTriggers stays in sync with
+        // entities the engine removes on room transitions.
+        public static void UntrackTrigger(CheckpointTrigger trigger) =>
+            _activeTriggers.Remove(trigger);
 
         private static void OnUpdate(On.Celeste.Level.orig_Update orig, Level self) {
             orig(self);
@@ -101,18 +97,20 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             if (AxiomeToolboxModule.Settings.Enabled) PlaceCheckpointInLevel(self);
         }
 
-        public static void RemoveCheckpointEntitiesFromLevel(Level level) {
-            foreach (var checkpoint in level.Tracker.GetEntities<CheckpointTrigger>())
-                checkpoint.RemoveSelf();
+        public static void RemoveCheckpointEntitiesFromLevel() {
+            foreach (var trigger in _activeTriggers)
+                trigger.RemoveSelf();
+            _activeTriggers.Clear();
         }
 
-        public static void PlaceCheckpointInLevel(Level level)
-        {
+        public static void PlaceCheckpointInLevel(Level level) {
             string roomID = GetRoomID(level);
             if (placements.TryGetValue(roomID, out var checkpoints)) {
                 Color color = GetCheckpointColor();
                 foreach (var data in checkpoints) {
-                    level.Add(new CheckpointTrigger(color, data));
+                    var trigger = new CheckpointTrigger(color, data);
+                    level.Add(trigger);
+                    _activeTriggers.Add(trigger);
                 }
             }
         }
@@ -135,9 +133,9 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
             PlaceCheckpointInLevel(level);
         }
 
-        public static void OnBeforeSaveState(Level level) {
+        public static void OnBeforeSaveState(Level _) {
             ResetAllTriggeredStates();
-            RemoveCheckpointEntitiesFromLevel(level);
+            RemoveCheckpointEntitiesFromLevel();
         }
 
         public class AxiomeCheckpointData {

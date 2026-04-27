@@ -28,6 +28,11 @@ public class CheckpointTrigger : Entity {
         Depth = RenderDepth;
     }
 
+    public override void Removed(Scene scene) {
+        base.Removed(scene);
+        CheckpointPlacementManager.UntrackTrigger(this);
+    }
+
     public override void Update() {
         base.Update();
 

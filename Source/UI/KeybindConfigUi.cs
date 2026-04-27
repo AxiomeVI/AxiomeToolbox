@@ -6,23 +6,22 @@ using System.Linq;
 
 namespace Celeste.Mod.AxiomeToolbox.UI;
 
+public record KeybindEntry(string LabelDialogId, ButtonBinding Binding);
+
 [Tracked]
 internal class KeybindConfigUi : TextMenu {
-    private enum Slot { PlaceKeyboard, ClearKeyboard, PlaceController, ClearController }
+    private readonly IList<KeybindEntry> _entries;
 
-    private bool _closing;
+    private bool  _closing;
     private float _inputDelay;
-    private bool _remapping;
+    private bool  _remapping;
     private float _remappingEase;
-    private Slot _remappingSlot;
+    private int   _remappingEntry;
+    private bool  _remappingIsKeyboard;
     private float _timeout;
 
-    // Derived from _remappingSlot — no separate fields needed
-    private bool IsRemappingKeyboard => _remappingSlot is Slot.PlaceKeyboard or Slot.ClearKeyboard;
-    private string RemappingLabel => Dialog.Clean(
-        _remappingSlot is Slot.PlaceKeyboard or Slot.PlaceController
-            ? DialogIds.PlaceCheckpointId
-            : DialogIds.ClearCheckpointId);
+    private bool   IsRemappingKeyboard => _remappingIsKeyboard;
+    private string RemappingLabel      => Dialog.Clean(_entries[_remappingEntry].LabelDialogId);
 
     private static readonly Buttons[] AllButtons = {
         Buttons.A, Buttons.B, Buttons.X, Buttons.Y,
@@ -33,7 +32,8 @@ internal class KeybindConfigUi : TextMenu {
         Buttons.DPadUp, Buttons.DPadDown, Buttons.DPadLeft, Buttons.DPadRight,
     };
 
-    public KeybindConfigUi() {
+    public KeybindConfigUi(IList<KeybindEntry> entries) {
+        _entries = entries;
         Reload();
         OnESC = OnCancel = () => { Focused = false; _closing = true; };
         MinWidth = 600f;
@@ -43,28 +43,29 @@ internal class KeybindConfigUi : TextMenu {
 
     private void Reload(int index = -1) {
         Clear();
-        var s = AxiomeToolboxModule.Settings;
-
         Add(new Header(Dialog.Clean(DialogIds.KeybindConfigId)));
 
         Add(new SubHeader(Dialog.Clean(DialogIds.KeyConfigTitle)));
-        Add(new Setting(Dialog.Clean(DialogIds.PlaceCheckpointId), s.PlaceCheckpoint.Keys)
-            .Pressed(() => StartRemap(Slot.PlaceKeyboard)));
-        Add(new Setting(Dialog.Clean(DialogIds.ClearCheckpointId), s.ClearCheckpoints.Keys)
-            .Pressed(() => StartRemap(Slot.ClearKeyboard)));
+        for (int i = 0; i < _entries.Count; i++) {
+            int ei = i;
+            Add(new Setting(Dialog.Clean(_entries[i].LabelDialogId), _entries[i].Binding.Keys)
+                .Pressed(() => StartRemap(ei, true)));
+        }
 
         Add(new SubHeader(Dialog.Clean(DialogIds.BtnConfigTitle)));
-        Add(new Setting(Dialog.Clean(DialogIds.PlaceCheckpointId), s.PlaceCheckpoint.Buttons)
-            .Pressed(() => StartRemap(Slot.PlaceController)));
-        Add(new Setting(Dialog.Clean(DialogIds.ClearCheckpointId), s.ClearCheckpoints.Buttons)
-            .Pressed(() => StartRemap(Slot.ClearController)));
+        for (int i = 0; i < _entries.Count; i++) {
+            int ei = i;
+            Add(new Setting(Dialog.Clean(_entries[i].LabelDialogId), _entries[i].Binding.Buttons)
+                .Pressed(() => StartRemap(ei, false)));
+        }
 
         if (index >= 0) Selection = index;
     }
 
-    private void StartRemap(Slot slot) {
+    private void StartRemap(int entryIndex, bool isKeyboard) {
         _remapping = true;
-        _remappingSlot = slot;
+        _remappingEntry = entryIndex;
+        _remappingIsKeyboard = isKeyboard;
         _timeout = 5f;
         Focused = false;
     }
@@ -76,19 +77,11 @@ internal class KeybindConfigUi : TextMenu {
         Reload(Selection);
     }
 
-    private void ApplyRemap(Keys key) {
-        var list = _remappingSlot is Slot.PlaceKeyboard
-            ? AxiomeToolboxModule.Settings.PlaceCheckpoint.Keys
-            : AxiomeToolboxModule.Settings.ClearCheckpoints.Keys;
-        ApplyRemap(key, list);
-    }
+    private void ApplyRemap(Keys key) =>
+        ApplyRemap(key, _entries[_remappingEntry].Binding.Keys);
 
-    private void ApplyRemap(Buttons button) {
-        var list = _remappingSlot is Slot.PlaceController
-            ? AxiomeToolboxModule.Settings.PlaceCheckpoint.Buttons
-            : AxiomeToolboxModule.Settings.ClearCheckpoints.Buttons;
-        ApplyRemap(button, list);
-    }
+    private void ApplyRemap(Buttons button) =>
+        ApplyRemap(button, _entries[_remappingEntry].Binding.Buttons);
 
     public override void Update() {
         base.Update();

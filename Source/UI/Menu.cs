@@ -4,6 +4,7 @@ using Celeste.Mod.AxiomeToolbox.DeathConfirm;
 using Celeste.Mod.AxiomeToolbox.MenuTiming;
 using Celeste.Mod.AxiomeToolbox.WaterBoost;
 using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
+using Celeste.Mod.AxiomeToolbox.Timeline;
 using Monocle;
 
 namespace Celeste.Mod.AxiomeToolbox.UI;
@@ -23,25 +24,50 @@ public static class ModMenuOptions {
                 }
         );
 
-        TextMenu.OnOff detectBadCB = (TextMenu.OnOff)new TextMenu.OnOff(
+        TextMenuExt.SubMenu detectionSubMenu = new(Dialog.Clean(DialogIds.DetectionRulesId), false)
+        {
+            Visible = _settings.Enabled
+        };
+
+        detectionSubMenu.Add(new TextMenu.OnOff(
             Dialog.Clean(DialogIds.DetectBadCornerBoostId), _settings.DetectBadCornerBoost)
-            { Visible = _settings.Enabled }
-            .Change(v => { _settings.DetectBadCornerBoost = v; if (!v) BadCornerBoostDetector.Reset(); });
+            .Change(v => { _settings.DetectBadCornerBoost = v; if (!v) BadCornerBoostDetector.Reset(); }));
 
-        TextMenu.OnOff detectDeathFrames = (TextMenu.OnOff)new TextMenu.OnOff(
+        detectionSubMenu.Add(new TextMenu.OnOff(
             Dialog.Clean(DialogIds.DetectLostDeathFramesId), _settings.DetectLostDeathFrames)
-            { Visible = _settings.Enabled }
-            .Change(v => { _settings.DetectLostDeathFrames = v; if (!v) DeathConfirmDetector.Reset(); });
+            .Change(v => { _settings.DetectLostDeathFrames = v; if (!v) DeathConfirmDetector.Reset(); }));
 
-        TextMenu.OnOff detectMenuTiming = (TextMenu.OnOff)new TextMenu.OnOff(
+        detectionSubMenu.Add(new TextMenu.OnOff(
             Dialog.Clean(DialogIds.DetectMenuTimingLossId), _settings.DetectMenuTimingLoss)
-            { Visible = _settings.Enabled }
-            .Change(v => { _settings.DetectMenuTimingLoss = v; if (!v) MenuTimingDetector.Reset(); });
+            .Change(v => { _settings.DetectMenuTimingLoss = v; if (!v) MenuTimingDetector.Reset(); }));
 
-        TextMenu.OnOff detectWaterBoost = (TextMenu.OnOff)new TextMenu.OnOff(
+        detectionSubMenu.Add(new TextMenu.OnOff(
             Dialog.Clean(DialogIds.DetectFailedWaterBoostId), _settings.DetectFailedWaterBoost)
-            { Visible = _settings.Enabled }
-            .Change(v => { _settings.DetectFailedWaterBoost = v; if (!v) WaterBoostDetector.Reset(); });
+            .Change(v => { _settings.DetectFailedWaterBoost = v; if (!v) WaterBoostDetector.Reset(); }));
+
+        // ── Timeline submenu ──────────────────────────────────────────────────
+        int[] windowSizes = [30, 60, 120, 300];
+        int currentWindowIdx = System.Array.IndexOf(windowSizes, _settings.TimelineWindowSize);
+        if (currentWindowIdx < 0) currentWindowIdx = 2; // default to 120
+
+        TextMenuExt.SubMenu timelineSubMenu = new(Dialog.Clean(DialogIds.TimelineSubmenuId), false) {
+            Visible = _settings.Enabled
+        };
+
+        timelineSubMenu.Add(new TextMenu.Slider(
+            Dialog.Clean(DialogIds.TimelinePositionId),
+            i => ((HudCorner)i).ToString(),
+            (int)HudCorner.TopLeft,
+            (int)HudCorner.BottomRight,
+            (int)_settings.TimelinePosition)
+            .Change(v => _settings.TimelinePosition = (HudCorner)v));
+
+        timelineSubMenu.Add(new TextMenu.Slider(
+            Dialog.Clean(DialogIds.TimelineWindowSizeId),
+            i => windowSizes[i].ToString(),
+            0, windowSizes.Length - 1,
+            currentWindowIdx)
+            .Change(v => _settings.TimelineWindowSize = windowSizes[v]));
 
         TextMenu.Button placeButton = new TextMenu.Button(Dialog.Clean(DialogIds.PlaceCheckpointId)) {
             Visible = _settings.Enabled,
@@ -52,7 +78,7 @@ public static class ModMenuOptions {
         TextMenu.Button clearButton = new TextMenu.Button(Dialog.Clean(DialogIds.ClearCheckpointId)) {
             Visible = _settings.Enabled,
             Disabled = !inGame,
-            OnPressed = () => CheckpointPlacementManager.ClearAll(Engine.Scene as Level)
+            OnPressed = () => CheckpointPlacementManager.ClearAll()
         };
 
         TextMenu.Button keybindButton = new TextMenu.Button(Dialog.Clean(DialogIds.KeybindConfigId)) {
@@ -60,7 +86,11 @@ public static class ModMenuOptions {
         };
         keybindButton.Pressed(() => {
             menu.Focused = false;
-            var ui = new KeybindConfigUi();
+            var ui = new KeybindConfigUi([
+                new(DialogIds.PlaceCheckpointId, _settings.PlaceCheckpoint),
+                new(DialogIds.ClearCheckpointId, _settings.ClearCheckpoints),
+                new(DialogIds.TimelineInspectId, _settings.TimelineInspect),
+            ]);
             ui.OnClose = () => menu.Focused = true;
             Engine.Scene.Add(ui);
             Engine.Scene.OnEndOfFrame += () => Engine.Scene.Entities.UpdateLists();
@@ -71,10 +101,8 @@ public static class ModMenuOptions {
             {
                 _settings.Enabled = value;
                 _stopTimerWhenPaused.Visible = value;
-                detectBadCB.Visible = value;
-                detectDeathFrames.Visible = value;
-                detectMenuTiming.Visible = value;
-                detectWaterBoost.Visible = value;
+                detectionSubMenu.Visible = value;
+                timelineSubMenu.Visible = value;
                 placeButton.Visible = value;
                 clearButton.Visible = value;
                 keybindButton.Visible = value;
@@ -83,17 +111,16 @@ public static class ModMenuOptions {
                     DeathConfirmDetector.Reset();
                     MenuTimingDetector.Reset();
                     WaterBoostDetector.Reset();
-                    CheckpointPlacementManager.ClearAll(Engine.Scene as Level);
+                    CheckpointPlacementManager.ClearAll();
                     StopTimerWhenPausedManager.Reset();
+                    TimelineTracker.Reset();
                 }
             }
         ));
 
         menu.Add(_stopTimerWhenPaused);
-        menu.Add(detectBadCB);
-        menu.Add(detectDeathFrames);
-        menu.Add(detectMenuTiming);
-        menu.Add(detectWaterBoost);
+        menu.Add(detectionSubMenu);
+        menu.Add(timelineSubMenu);
         menu.Add(placeButton);
         menu.Add(clearButton);
         menu.Add(keybindButton);

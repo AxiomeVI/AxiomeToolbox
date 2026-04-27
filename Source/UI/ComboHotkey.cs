@@ -5,14 +5,13 @@ using Microsoft.Xna.Framework.Input;
 namespace Celeste.Mod.AxiomeToolbox.Hotkeys;
 
 /// Wraps a ButtonBinding and detects combo presses (all bound keys held simultaneously).
-/// Rising-edge only: Pressed is true for exactly one frame when the combo activates.
+/// Pressed: rising-edge only (true for exactly one frame when combo activates).
+/// IsDown: true every frame all bound keys/buttons are held.
 /// Pattern taken from CelesteTAS Hotkeys.cs / SpeedrunTool HotkeyRebase.cs.
 internal class ComboHotkey(ButtonBinding binding) {
     // Shared input states — updated once per frame by UpdateStates()
     private static KeyboardState _kbState;
     private static GamePadState _padState;
-
-    private bool _lastCheck;
 
     /// Call once per frame before updating any ComboHotkey instances.
     internal static void UpdateStates() {
@@ -28,7 +27,7 @@ internal class ComboHotkey(ButtonBinding binding) {
         return default;
     }
 
-    private bool IsDown() {
+    private bool Check() {
         if (binding.Keys.Count > 0 && _kbState != default && binding.Keys.All(_kbState.IsKeyDown))
             return true;
         if (binding.Buttons.Count > 0 && _padState != default && binding.Buttons.All(_padState.IsButtonDown))
@@ -38,10 +37,12 @@ internal class ComboHotkey(ButtonBinding binding) {
 
     /// Call once per frame per instance, after UpdateStates().
     public void Update() {
-        bool current = IsDown();
-        Pressed = !_lastCheck && current;
-        _lastCheck = current;
+        bool current = Check();
+        // IsDown still holds last frame's value here — use it for edge detection.
+        Pressed = !IsDown && current;
+        IsDown = current;
     }
 
     public bool Pressed { get; private set; }
+    public bool IsDown  { get; private set; }
 }

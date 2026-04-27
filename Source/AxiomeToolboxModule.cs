@@ -7,6 +7,7 @@ using Celeste.Mod.AxiomeToolbox.Integration;
 using Celeste.Mod.AxiomeToolbox.MenuTiming;
 using Celeste.Mod.AxiomeToolbox.WaterBoost;
 using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
+using Celeste.Mod.AxiomeToolbox.Timeline;
 using Celeste.Mod.AxiomeToolbox.UI;
 using FMOD.Studio;
 using MonoMod.ModInterop;
@@ -55,9 +56,14 @@ public class AxiomeToolboxModule : EverestModule {
             null,
             null
         );
+        // WHY: Placed last — TimelineTracker.Load() synchronously calls
+        // SaveLoadIntegration.RegisterSaveLoadAction, which requires the delegate
+        // populated by typeof(SaveLoadIntegration).ModInterop() above.
+        TimelineTracker.Load();
     }
 
     public override void Unload() {
+        TimelineTracker.Unload();
         CheckpointPlacementManager.Unload();
         BadCornerBoostDetector.Unload();
         DeathConfirmDetector.Unload();

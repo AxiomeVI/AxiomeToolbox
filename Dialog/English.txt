@@ -1,32 +1,40 @@
 # ============================== Mod Menu ======================================
-AXIOME_TOOLBOX=                               Axiome Toolbox
-ENABLED=                                      Enabled
-STOP_TIMER_WHEN_PAUSED=                       Freeze the timer while the game is paused
+AT_MOD=                                       Axiome Toolbox
+AT_ENABLED=                                   Enabled
+AT_STOP_TIMER_WHEN_PAUSED=                    Freeze the timer while the game is paused
 
-CLEAR_CHECKPOINT=                             Clear all checkpoints
-PLACE_CHECKPOINT=                             Place a checkpoint
-KEYBIND_COMBO_SUB=                            Binding multiple keys acts as a key combo (all must be held)
-CHECKPOINT_COLOR=                             Checkpoint Color
-CHECKPOINT_COLOR_SUB=                         Color of the in-game checkpoint
+AT_CLEAR_CHECKPOINT=                          Clear all checkpoints
+AT_PLACE_CHECKPOINT=                          Place a checkpoint
+AT_KEYBIND_COMBO_SUB=                         Binding multiple keys acts as a key combo (all must be held)
+AT_CHECKPOINT_COLOR=                          Checkpoint Color
+AT_CHECKPOINT_COLOR_SUB=                      Color of the in-game checkpoint
 
-KEYBIND_CONFIG=                               Hotkeys
+AT_KEYBIND_CONFIG=                            Hotkeys
 
-DETECT_BAD_CORNER_BOOST=                      Detect bad corner boost
-DETECT_LOST_DEATH_FRAMES=                     Detect lost frames on death confirm
-DETECT_MENU_TIMING_LOSS=                      Detect lost frames on menuing
-DETECT_FAILED_WATER_BOOST=                    Detect failed waterboost
+AT_DETECTION_RULES=                           Detection Rules
+
+AT_DETECT_BAD_CORNER_BOOST=                   Detect bad corner boost
+AT_DETECT_LOST_DEATH_FRAMES=                  Detect lost frames on death confirm
+AT_DETECT_MENU_TIMING_LOSS=                   Detect lost frames on menuing
+AT_DETECT_FAILED_WATER_BOOST=                 Detect failed waterboost
 
 # ============================== Bad Corner Boost ================================
-BAD_CB_DETECTED=                              Detected bad cornerboost
+AT_BAD_CB_DETECTED=                           Detected bad cornerboost
 
 # ============================== Death Confirm ===================================
-LOST_DEATH_FRAMES=                            Detected death confirm 1 frame late
-LOST_DEATH_FRAMES_PLURAL=                     Detected death confirm {0} frames late
+AT_LOST_DEATH_FRAMES=                         Detected death confirm 1 frame late
+AT_LOST_DEATH_FRAMES_PLURAL=                  Detected death confirm {0} frames late
 
 # ============================== Menu Timing =====================================
-LOST_MENU_FRAMES=                             Detected 1 frame lost on menuing
-LOST_MENU_FRAMES_PLURAL=                      Detected {0} frames lost on menuing
+AT_LOST_MENU_FRAMES=                          Detected 1 frame lost on menuing
+AT_LOST_MENU_FRAMES_PLURAL=                   Detected {0} frames lost on menuing
 
 # ============================== Water Boost =====================================
-FAILED_WATER_BOOST=                           Detected failed waterboost (1 jump / {0} inputs)
-FAILED_WATER_BOOST_PLURAL=                    Detected failed waterboost ({0} jumps / {1} inputs)
+AT_FAILED_WATER_BOOST=                        Detected failed waterboost (1 jump / {0} inputs)
+AT_FAILED_WATER_BOOST_PLURAL=                 Detected failed waterboost ({0} jumps / {1} inputs)
+
+# ============================== Timeline ========================================
+AT_TIMELINE=                                  Timeline
+AT_TIMELINE_POSITION=                         Position
+AT_TIMELINE_WINDOW_SIZE=                      Window length (frames)
+AT_TIMELINE_INSPECT=                          Inspect timeline
