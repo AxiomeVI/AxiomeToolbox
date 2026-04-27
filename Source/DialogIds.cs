@@ -45,4 +45,13 @@ public static class DialogIds {
     // Water Boost
     public const string FailedWaterBoostId       = "AT_FAILED_WATER_BOOST";
     public const string FailedWaterBoostPluralId = "AT_FAILED_WATER_BOOST_PLURAL";
+
+    // Second Blockless
+    public const string DetectSecondBlocklessId  = "AT_DETECT_2ND_BLOCKLESS";
+    public const string TwoBLBadPositionId       = "AT_2BL_BAD_POSITION";
+    public const string TwoBLFirstJumpEarlyId    = "AT_2BL_FIRST_JUMP_EARLY";
+    public const string TwoBLFirstJumpLateId     = "AT_2BL_FIRST_JUMP_LATE";
+    public const string TwoBLSecondJumpEarlyId   = "AT_2BL_SECOND_JUMP_EARLY";
+    public const string TwoBLSecondJumpLateId    = "AT_2BL_SECOND_JUMP_LATE";
+    public const string TwoBLJumpHeldId          = "AT_2BL_JUMP_HELD";
 }
