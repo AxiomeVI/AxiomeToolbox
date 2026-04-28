@@ -64,7 +64,14 @@ public class TimelineOverlay : Entity {
 
     public override void Update() {
         base.Update();
+        DoUpdateInspect();
+    }
 
+    // Called by TimelineTracker.OnEngineUpdate when SRT is in post-load frozen state
+    // so that inspect mode works even though SRT blocks normal entity Update() calls.
+    public void UpdateInspect() => DoUpdateInspect();
+
+    private void DoUpdateInspect() {
         var mouse = Mouse.GetState();
         int scrollDelta = (mouse.ScrollWheelValue - _prevScrollValue) / 120;
         _prevScrollValue = mouse.ScrollWheelValue;
