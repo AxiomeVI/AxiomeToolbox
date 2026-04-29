@@ -3,6 +3,7 @@ using Celeste.Mod.AxiomeToolbox.Checkpoint;
 using Celeste.Mod.AxiomeToolbox.DeathConfirm;
 using Celeste.Mod.AxiomeToolbox.MenuTiming;
 using Celeste.Mod.AxiomeToolbox.WaterBoost;
+using Celeste.Mod.AxiomeToolbox.SecondBlockless;
 using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
 using Celeste.Mod.AxiomeToolbox.Timeline;
 using Monocle;
@@ -45,6 +46,10 @@ public static class ModMenuOptions {
             Dialog.Clean(DialogIds.DetectFailedWaterBoostId), _settings.DetectFailedWaterBoost)
             .Change(v => { _settings.DetectFailedWaterBoost = v; if (!v) WaterBoostDetector.Reset(); }));
 
+        detectionSubMenu.Add(new TextMenu.OnOff(
+            Dialog.Clean(DialogIds.DetectSecondBlocklessId), _settings.DetectSecondBlockless)
+            .Change(v => { _settings.DetectSecondBlockless = v; if (!v) SecondBlocklessDetector.Reset(); }));
+
         // ── Timeline submenu ──────────────────────────────────────────────────
         int[] windowSizes = [30, 60, 120, 300];
         int currentWindowIdx = System.Array.IndexOf(windowSizes, _settings.TimelineWindowSize);
@@ -54,20 +59,33 @@ public static class ModMenuOptions {
             Visible = _settings.Enabled
         };
 
-        timelineSubMenu.Add(new TextMenu.Slider(
+        var timelinePositionSlider = (TextMenu.Slider)new TextMenu.Slider(
             Dialog.Clean(DialogIds.TimelinePositionId),
             i => ((HudCorner)i).ToString(),
             (int)HudCorner.TopLeft,
             (int)HudCorner.BottomRight,
-            (int)_settings.TimelinePosition)
-            .Change(v => _settings.TimelinePosition = (HudCorner)v));
+            (int)_settings.TimelinePosition) { Visible = _settings.TimelineEnabled }
+            .Change(v => _settings.TimelinePosition = (HudCorner)v);
 
-        timelineSubMenu.Add(new TextMenu.Slider(
+        var timelineWindowSizeSlider = (TextMenu.Slider)new TextMenu.Slider(
             Dialog.Clean(DialogIds.TimelineWindowSizeId),
             i => windowSizes[i].ToString(),
             0, windowSizes.Length - 1,
-            currentWindowIdx)
-            .Change(v => _settings.TimelineWindowSize = windowSizes[v]));
+            currentWindowIdx) { Visible = _settings.TimelineEnabled }
+            .Change(v => _settings.TimelineWindowSize = windowSizes[v]);
+
+        timelineSubMenu.Add(new TextMenu.OnOff(
+            Dialog.Clean(DialogIds.TimelineEnabledId), _settings.TimelineEnabled)
+            .Change(v => {
+                _settings.TimelineEnabled = v;
+                timelinePositionSlider.Visible = v;
+                timelineWindowSizeSlider.Visible = v;
+                if (!v) TimelineTracker.Reset();
+                else if (Engine.Scene is Level lvl) TimelineTracker.EnsureOverlay(lvl);
+            }));
+
+        timelineSubMenu.Add(timelinePositionSlider);
+        timelineSubMenu.Add(timelineWindowSizeSlider);
 
         TextMenu.Button placeButton = new TextMenu.Button(Dialog.Clean(DialogIds.PlaceCheckpointId)) {
             Visible = _settings.Enabled,
@@ -111,9 +129,12 @@ public static class ModMenuOptions {
                     DeathConfirmDetector.Reset();
                     MenuTimingDetector.Reset();
                     WaterBoostDetector.Reset();
+                    SecondBlocklessDetector.Reset();
                     CheckpointPlacementManager.ClearAll();
                     StopTimerWhenPausedManager.Reset();
                     TimelineTracker.Reset();
+                } else if (_settings.TimelineEnabled && Engine.Scene is Level lvl) {
+                    TimelineTracker.EnsureOverlay(lvl);
                 }
             }
         ));

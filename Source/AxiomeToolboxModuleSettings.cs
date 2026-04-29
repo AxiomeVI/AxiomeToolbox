@@ -34,6 +34,13 @@ public class AxiomeToolboxModuleSettings : EverestModuleSettings {
     [SettingName(DialogIds.DetectFailedWaterBoostId)]
     public bool DetectFailedWaterBoost { get; set; } = true;
 
+    [SettingName(DialogIds.DetectSecondBlocklessId)]
+    public bool DetectSecondBlockless { get; set; } = true;
+
+    [SettingName(DialogIds.TimelineEnabledId)]
+    [SettingIgnore]
+    public bool TimelineEnabled { get; set; } = true;
+
     [SettingName(DialogIds.TimelinePositionId)]
     [SettingIgnore]
     public HudCorner TimelinePosition { get; set; } = HudCorner.BottomRight;

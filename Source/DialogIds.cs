@@ -27,6 +27,7 @@ public static class DialogIds {
 
     // Timeline
     public const string TimelineSubmenuId    = "AT_TIMELINE";
+    public const string TimelineEnabledId    = "AT_TIMELINE_ENABLED";
     public const string TimelinePositionId   = "AT_TIMELINE_POSITION";
     public const string TimelineWindowSizeId = "AT_TIMELINE_WINDOW_SIZE";
     public const string TimelineInspectId    = "AT_TIMELINE_INSPECT";
@@ -47,11 +48,16 @@ public static class DialogIds {
     public const string FailedWaterBoostPluralId = "AT_FAILED_WATER_BOOST_PLURAL";
 
     // Second Blockless
-    public const string DetectSecondBlocklessId  = "AT_DETECT_2ND_BLOCKLESS";
-    public const string TwoBLBadPositionId       = "AT_2BL_BAD_POSITION";
-    public const string TwoBLFirstJumpEarlyId    = "AT_2BL_FIRST_JUMP_EARLY";
-    public const string TwoBLFirstJumpLateId     = "AT_2BL_FIRST_JUMP_LATE";
-    public const string TwoBLSecondJumpEarlyId   = "AT_2BL_SECOND_JUMP_EARLY";
-    public const string TwoBLSecondJumpLateId    = "AT_2BL_SECOND_JUMP_LATE";
-    public const string TwoBLJumpHeldId          = "AT_2BL_JUMP_HELD";
+    public const string DetectSecondBlocklessId       = "AT_DETECT_2ND_BLOCKLESS";
+    public const string TwoBLBadPositionId            = "AT_2BL_BAD_POSITION";
+    public const string TwoBLFirstJumpEarlyId         = "AT_2BL_FIRST_JUMP_EARLY";
+    public const string TwoBLFirstJumpEarlyPluralId   = "AT_2BL_FIRST_JUMP_EARLY_PLURAL";
+    public const string TwoBLFirstJumpLateId          = "AT_2BL_FIRST_JUMP_LATE";
+    public const string TwoBLFirstJumpLatePluralId    = "AT_2BL_FIRST_JUMP_LATE_PLURAL";
+    public const string TwoBLSecondJumpEarlyId        = "AT_2BL_SECOND_JUMP_EARLY";
+    public const string TwoBLSecondJumpEarlyPluralId  = "AT_2BL_SECOND_JUMP_EARLY_PLURAL";
+    public const string TwoBLSecondJumpLateId         = "AT_2BL_SECOND_JUMP_LATE";
+    public const string TwoBLSecondJumpLatePluralId   = "AT_2BL_SECOND_JUMP_LATE_PLURAL";
+    public const string TwoBLJumpHeldId               = "AT_2BL_JUMP_HELD";
+    public const string TwoBLJumpHeldPluralId         = "AT_2BL_JUMP_HELD_PLURAL";
 }

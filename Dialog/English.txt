@@ -36,14 +36,20 @@ AT_FAILED_WATER_BOOST_PLURAL=                 Detected failed waterboost ({0} ju
 # ============================== 2nd Blockless =====================================
 AT_DETECT_2ND_BLOCKLESS=                      Detect 2nd blockless errors
 AT_2BL_BAD_POSITION=                          bad position: {0}px too far left
-AT_2BL_FIRST_JUMP_EARLY=                      {0} frame(s) early on first jump
-AT_2BL_FIRST_JUMP_LATE=                       {0} frame(s) late on first jump
-AT_2BL_SECOND_JUMP_EARLY=                     {0} frame(s) early on second jump
-AT_2BL_SECOND_JUMP_LATE=                      {0} frame(s) late on second jump
-AT_2BL_JUMP_HELD=                             second jump held {0} frame(s), need 2
+AT_2BL_FIRST_JUMP_EARLY=                      1 frame early on ultra
+AT_2BL_FIRST_JUMP_EARLY_PLURAL=               {0} frames early on ultra
+AT_2BL_FIRST_JUMP_LATE=                       1 frame late on ultra
+AT_2BL_FIRST_JUMP_LATE_PLURAL=                {0} frames late on ultra
+AT_2BL_SECOND_JUMP_EARLY=                     1 frame early on coyote jump
+AT_2BL_SECOND_JUMP_EARLY_PLURAL=              {0} frames early on coyote jump
+AT_2BL_SECOND_JUMP_LATE=                      1 frame late on coyote jump
+AT_2BL_SECOND_JUMP_LATE_PLURAL=               {0} frames late on coyote jump
+AT_2BL_JUMP_HELD=                             coyote jump held 1 frame
+AT_2BL_JUMP_HELD_PLURAL=                      coyote jump held {0} frames
 
 # ============================== Timeline ========================================
 AT_TIMELINE=                                  Timeline
+AT_TIMELINE_ENABLED=                          Show timeline
 AT_TIMELINE_POSITION=                         Position
 AT_TIMELINE_WINDOW_SIZE=                      Window length (frames)
 AT_TIMELINE_INSPECT=                          Inspect timeline

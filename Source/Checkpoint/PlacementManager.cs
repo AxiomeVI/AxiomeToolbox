@@ -49,7 +49,6 @@ namespace Celeste.Mod.AxiomeToolbox.Checkpoint {
         public static void Update(Level level) {
             if (!AxiomeToolboxModule.Settings.Enabled) return;
 
-            ComboHotkey.UpdateStates();
             _placeHotkey.Update();
             _clearHotkey.Update();
 

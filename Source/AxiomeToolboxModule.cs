@@ -5,6 +5,7 @@ using Celeste.Mod.AxiomeToolbox.Checkpoint;
 using Celeste.Mod.AxiomeToolbox.DeathConfirm;
 using Celeste.Mod.AxiomeToolbox.Integration;
 using Celeste.Mod.AxiomeToolbox.MenuTiming;
+using Celeste.Mod.AxiomeToolbox.SecondBlockless;
 using Celeste.Mod.AxiomeToolbox.WaterBoost;
 using Celeste.Mod.AxiomeToolbox.StopTimerWhenPaused;
 using Celeste.Mod.AxiomeToolbox.Timeline;
@@ -46,6 +47,7 @@ public class AxiomeToolboxModule : EverestModule {
         MenuTimingDetector.Load();
         WaterBoostDetector.Load();
         StopTimerWhenPausedManager.Load();
+        SecondBlocklessDetector.Load();
         typeof(SaveLoadIntegration).ModInterop();
         typeof(RoomTimerIntegration).ModInterop();
         SaveLoadInstance = SaveLoadIntegration.RegisterSaveLoadAction(
@@ -64,6 +66,7 @@ public class AxiomeToolboxModule : EverestModule {
 
     public override void Unload() {
         TimelineTracker.Unload();
+        SecondBlocklessDetector.Unload();
         CheckpointPlacementManager.Unload();
         BadCornerBoostDetector.Unload();
         DeathConfirmDetector.Unload();
@@ -87,6 +90,7 @@ public class AxiomeToolboxModule : EverestModule {
     private static void OnLoadState(Dictionary<Type, Dictionary<string, object>> d, Level level) {
         if (!Settings.Enabled) return;
         CheckpointPlacementManager.OnLoadState(d, level);
+        SecondBlocklessDetector.Reset();
     }
 
     private static void OnBeforeSaveState(Level level) {

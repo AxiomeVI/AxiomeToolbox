@@ -320,9 +320,16 @@ public static class TimelineTracker {
             return;
         }
 
-        // WHY: UpdateStates() snapshots keyboard/gamepad once per frame so all
-        // ComboHotkey instances (overlay + checkpoint manager) read consistent input.
+        // WHY: UpdateStates() must still run even when timeline is disabled —
+        // checkpoint hotkeys share the same ComboHotkey frame contract.
         ComboHotkey.UpdateStates();
+
+        // WHY: also gates Overlay?.UpdateInspect() in the srtIsBusy branch below —
+        // if the timeline is disabled, inspect mode should not run either.
+        if (!AxiomeToolboxModule.Settings.TimelineEnabled) {
+            orig(self, gameTime);
+            return;
+        }
 
         // IMPORTANT: capture isFrozen BEFORE calling orig.
         // orig() decrements FreezeTimer, so after orig the last freeze tick shows timer == 0.
@@ -360,7 +367,10 @@ public static class TimelineTracker {
             _pendingVisualSnapshot = null;
         }
         _srtWasBusy = srtIsBusy;
-        if (srtIsBusy) return;
+        if (srtIsBusy) {
+            Overlay?.UpdateInspect();
+            return;
+        }
 
         // WHY: Pause tracking during inspect mode so the view stays stable.
         // Side-effect: events during inspection are unrecorded; edge-detection state
@@ -448,6 +458,7 @@ public static class TimelineTracker {
     private static void OnLoadLevel(Level level, Player.IntroTypes playerIntro, bool isFromLoader) {
         if (!isFromLoader) return;
         if (!AxiomeToolboxModule.Settings.Enabled) return;
+        if (!AxiomeToolboxModule.Settings.TimelineEnabled) return;
         // WHY: Always replace on a fresh loader — OnLevelExit doesn't fire reliably before
         // all level transitions (e.g. chapter-select jumps go straight to LevelLoader).
         Overlay?.RemoveSelf();
@@ -557,6 +568,7 @@ public static class TimelineTracker {
         _dashExtAbsEnd      = (int)d[nameof(_dashExtAbsEnd)];
         _wasTransitioning   = (bool)d[nameof(_wasTransitioning)];
         // Defer visual restore until SRT freeze window ends (State → None).
-        _pendingVisualSnapshot = d;
+        // WHY: guard against save states created by older mod versions that lacked snap keys.
+        _pendingVisualSnapshot = d.ContainsKey(SnapFrame) ? d : null;
     }
 }
