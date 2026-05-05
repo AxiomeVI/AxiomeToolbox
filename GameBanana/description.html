@@ -1,0 +1,22 @@
+<p>An experimental mod adding features primarily intended for speedrun practice and labbing.</p>
+
+<h2>Features</h2>
+
+<h3>Freeze the timer when the game is paused</h3>
+<p>Testing movement and strat alternatives often requires frame advance and pause buffering, but the timer running during pause causes timing inaccuracies. This option halts the timer while the game is paused, ensuring accurate timing.</p>
+
+<h3>Checkpoint</h3>
+<p>Similar to srt endpoint but doesn't stop the timer. They count as a room in regards to srt room count.</p>
+
+<h3>Timeline</h3>
+<p>A frame-accurate HUD bar showing gameplay events as colored spans in a scrolling window. Tracks dash (with extension frames), jump held, coyote frames, half-gravity, freeze frames, and input marks (dash press, jump press, jump fired). Room transitions, cutscene starts, and cutscene skips are also marked.</p>
+<p>Hold the <strong>Inspect</strong> hotkey to freeze the display and scroll through history with the mouse wheel. Hover over a span to see its label and frame count. Release to resume live tracking.</p>
+
+<h3>Detection rules inspired by <a href="https://github.com/6point28etc/MovementLinter">MovementLinter</a></h3>
+<ul>
+  <li>Bad cornerboost detection</li>
+  <li>Frames lost to menu actions (skip cutscene, retry, S&amp;Q and RTM)</li>
+  <li>Frames lost to late death confirm</li>
+  <li>Failed waterboost</li>
+  <li>2nd blockless</li>
+</ul>
